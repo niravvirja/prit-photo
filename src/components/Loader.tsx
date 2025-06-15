@@ -10,28 +10,32 @@ const Loader = () => {
       <div className="relative">
         {/* Camera Body */}
         <div 
-          className="relative w-36 h-36 rounded-full overflow-hidden shadow-2xl mx-auto"
+          className="relative w-48 h-48 rounded-full overflow-hidden shadow-2xl mx-auto animate-scale-in"
           style={{ backgroundColor: '#1a1a1a' }}
         >
           {/* Outer Camera Ring */}
           <div 
-            className="absolute inset-2 rounded-full border-2 opacity-80"
+            className="absolute inset-2 rounded-full border-2"
             style={{ 
               borderColor: 'var(--primary-color, #a8997a)',
               background: 'linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 50%, #0a0a0a 100%)',
-              animation: 'outerGlow 5s ease-in-out infinite reverse',
-              boxShadow: '0 0 10px var(--primary-color, #a8997a)'
+              animation: 'outerGlow 3s ease-in-out infinite alternate',
+              boxShadow: '0 0 15px var(--primary-color, #a8997a)'
             }} 
           />
           
           {/* Shutter Mechanism */}
           <div className="absolute inset-0 flex items-center justify-center">
             <svg 
-              width="90" 
-              height="90" 
+              width="120" 
+              height="120" 
               viewBox="0 0 100 100" 
-              className="transform rotate-90"
-              style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(90deg)' }}
+              className="transform"
+              style={{
+                position: 'absolute', top: '50%', left: '50%',
+                animation: 'spin 20s linear infinite reverse',
+                transform: 'translate(-50%, -50%)',
+              }}
             >
               {/* Background Container Ring */}
               <circle
@@ -72,7 +76,7 @@ const Loader = () => {
                     className="iris-blade"
                     style={{
                       transformOrigin: '50px 50px',
-                      animation: `irisBlade 3s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite`
+                      animation: `irisBlade 2.5s cubic-bezier(0.77, 0, 0.18, 1) infinite`
                     }}
                   />
                 );
@@ -114,43 +118,76 @@ const Loader = () => {
         </div>
         
         {/* Text */}
-        <div className="mt-6 text-center">
+        <div 
+          className="mt-8 text-center"
+          style={{ animation: 'text-fade-in 2s ease-out 0.5s forwards', opacity: 0 }}
+        >
           <div 
-            className="text-2xl font-bold tracking-[0.1em]"
+            className="font-outfit text-xl sm:text-2xl lg:text-3xl tracking-wider"
             style={{ 
-              fontFamily: 'Impact, sans-serif',
-              color: 'var(--text-primary, #2a2a2a)'
+              color: 'var(--text-primary, #2a2a2a)',
+              textShadow: '0 1px 3px rgba(0,0,0,0.1)'
             }}
           >
-            CAPTURING MOMENTS
+            UnfoldingTheWorldOf<span className="text-primary font-semibold">PritPhoto</span>
           </div>
         </div>
       </div>
 
       <style>{`
+        @font-face {
+          font-family: 'Top Luxury';
+          src: url('/fonts/top-luxury/TOPLUXURY.otf') format('opentype');
+          font-weight: normal;
+          font-style: normal;
+        }
+
+        @font-face {
+          font-family: 'Grafies';
+          src: url('/fonts/grafies/Grafies.otf') format('opentype');
+          font-weight: normal;
+          font-style: normal;
+        }
+
         @keyframes irisBlade {
-          0% {
-            transform: scale(1.15) rotate(-3deg);
+          0%, 100% {
+            transform: scale(1.1) rotate(5deg) translateZ(0);
             opacity: 0.8;
           }
           50% {
-            transform: scale(0.95) rotate(0deg);
+            transform: scale(0.85) rotate(-5deg) translateZ(0);
             opacity: 1;
-          }
-          100% {
-            transform: scale(1.15) rotate(-3deg);
-            opacity: 0.8;
           }
         }
 
         @keyframes outerGlow {
-          0%, 100% { 
-            transform: scale(1);
-            opacity: 0.2;
+          0% { 
+            transform: scale(1.0);
+            opacity: 0.8;
           }
-          50% { 
+          100% { 
             transform: scale(1.05);
-            opacity: 0.4;
+            opacity: 1;
+          }
+        }
+
+        @keyframes spin {
+          from {
+            transform: translate(-50%, -50%) rotate(0deg);
+          }
+          to {
+            transform: translate(-50%, -50%) rotate(360deg);
+          }
+        }
+
+        @keyframes text-fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
           }
         }
       `}</style>
