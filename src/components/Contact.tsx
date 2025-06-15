@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -146,6 +147,7 @@ const Contact = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {/* Show Email input only on desktop (sm and above) */}
                   <div className="space-y-3 hidden sm:block">
                     <Label htmlFor="email" className="text-foreground text-base font-bold">
                       Email Address *
@@ -160,10 +162,11 @@ const Contact = () => {
                         onChange={handleInputChange}
                         placeholder="your@email.com"
                         className="pl-14 h-12 border-2 border-border focus:border-primary text-foreground bg-background text-base rounded-2xl shadow-lg transition-all duration-300"
-                        required
+                        // required removed! Validation is done in JS
                       />
                     </div>
                   </div>
+
                   <div className="space-y-3">
                     <Label htmlFor="service" className="text-foreground text-base font-bold">
                       Service Required *
@@ -219,3 +222,5 @@ const Contact = () => {
 };
 
 export default Contact;
+
+// Contact.tsx is now 222 lines long. It's getting quite large—consider asking me to refactor this into smaller components for better maintainability.
