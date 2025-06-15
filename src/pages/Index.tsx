@@ -12,49 +12,48 @@ const Portfolio = lazy(() => import('../components/Portfolio'));
 const Testimonials = lazy(() => import('../components/Testimonials'));
 const Contact = lazy(() => import('../components/Contact'));
 
+
 const Index = () => {
   return (
     <div className="min-h-screen overflow-x-hidden">
       {/* Header Navigation */}
       <Header />
 
-      <Suspense fallback={<Loader />}>
-        {/* Hero Section - Background theme */}
-        <section id="hero" className="relative w-full">
-          <Hero />
+      {/* Hero Section - Background theme */}
+      <section id="hero" className="relative w-full">
+        <Hero />
+      </section>
+
+      {/* Main Content Container */}
+      <main className="relative w-full">
+        {/* About Section - Primary background */}
+        <section id="about" className="relative w-full">
+          <About />
         </section>
 
-        {/* Main Content Container */}
-        <main className="relative w-full">
-          {/* About Section - Primary background */}
-          <section id="about" className="relative w-full">
-            <About />
-          </section>
+        {/* Portfolio Section - Background theme */}
+        <section id="portfolio" className="relative w-full">
+          <Portfolio />
+        </section>
 
-          {/* Portfolio Section - Background theme */}
-          <section id="portfolio" className="relative w-full">
-            <Portfolio />
-          </section>
+        {/* Services Section - Primary background */}
+        <section id="services" className="relative w-full">
+          <Services />
+        </section>
 
-          {/* Services Section - Primary background */}
-          <section id="services" className="relative w-full">
-            <Services />
-          </section>
+        {/* Reviews Section (Testimonials) - Background theme */}
+        <section id="reviews" className="relative w-full">
+          <Testimonials />
+        </section>
 
-          {/* Reviews Section (Testimonials) - Background theme */}
-          <section id="reviews" className="relative w-full">
-            <Testimonials />
-          </section>
+        {/* Contact Section - Primary background */}
+        <section id="contact" className="relative w-full">
+          <Contact />
+        </section>
+      </main>
 
-          {/* Contact Section - Primary background */}
-          <section id="contact" className="relative w-full">
-            <Contact />
-          </section>
-        </main>
-
-        {/* Footer */}
-        <Footer />
-      </Suspense>
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
