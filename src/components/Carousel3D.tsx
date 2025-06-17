@@ -124,6 +124,10 @@ const Carousel3D = ({ slides }) => {
                         alt={slide.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
                         lazy={false}
+                        quality={75}
+                        format="webp"
+                        loading="eager"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 850px"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                     </div>
@@ -179,6 +183,10 @@ const Carousel3D = ({ slides }) => {
                         alt={slide.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
                         lazy={false}
+                        quality={70}
+                        format="webp"
+                        loading="eager"
+                        sizes="(max-width: 480px) 80vw, 340px"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                     </div>
