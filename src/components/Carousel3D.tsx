@@ -1,289 +1,219 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import OptimizedImage from './ui/optimized-image';
+import React, { useState, useEffect, useRef } from 'react';
 
-const Carousel3D = ({ slides }) => {
+const Carousel3D = () => {
+  // Portfolio slides data
+  const portfolioSlides = [
+    {
+      title: "Traditional Wedding",
+      description: "Capturing sacred moments of traditional ceremonies with artistic finesse",
+      button: "View Gallery",
+      section: "traditional-wedding",
+      desktopSrc: "https://res.cloudinary.com/dmo0bmu3c/image/upload/v1749984682/events/importants/portfolio/des-wedding.jpg",
+      mobileSrc: "https://res.cloudinary.com/dmo0bmu3c/image/upload/v1749984682/events/importants/portfolio/mob-wedding.jpg"
+    },
+    {
+      title: "Pre-Wedding Romance",
+      description: "Intimate sessions that weave your unique love story",
+      button: "View Gallery",
+      section: "pre-wedding-romance",
+      desktopSrc: "https://res.cloudinary.com/dmo0bmu3c/image/upload/v1749882053/events/arpitanddrashti/12.jpg",
+      mobileSrc: "https://res.cloudinary.com/dmo0bmu3c/image/upload/v1749882551/events/kuldipanddevangi-pre/01.jpg"
+    },
+    {
+      title: "Maternity Photography",
+      description: "Tender moments capturing the beauty of parenthood",
+      button: "View Gallery",
+      section: "maternity-photography",
+      desktopSrc: "https://res.cloudinary.com/dmo0bmu3c/image/upload/v1749899775/events/darshananddivya/05.jpg",
+      mobileSrc: "https://res.cloudinary.com/dmo0bmu3c/image/upload/v1749984688/events/importants/portfolio/mob-maternity.jpg"
+    },
+    {
+      title: "Ring Ceremony",
+      description: "Celebrating the moment of commitment with elegance and joy",
+      button: "View Gallery",
+      section: "ring-ceremony",
+      desktopSrc: "https://res.cloudinary.com/dmo0bmu3c/image/upload/v1749893068/events/yashanddivya/14.jpg",
+      mobileSrc: "https://res.cloudinary.com/dmo0bmu3c/image/upload/v1749984695/events/importants/portfolio/mob-ring-cer.jpg"
+    },
+  ];
+
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlay, setIsAutoPlay] = useState(true);
-  const touchStartX = useRef(null);
-  const touchEndX = useRef(null);
-  const intervalRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [currentX, setCurrentX] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const carouselRef = useRef(null);
 
-  // Cleaner transition function with debouncing
-  const changeSlide = useCallback((newIndex) => {
-    if (newIndex === currentIndex) return;
-    setCurrentIndex(newIndex);
-  }, [currentIndex]);
-
-  const nextSlide = useCallback(() => {
-    changeSlide((currentIndex + 1) % slides.length);
-  }, [currentIndex, slides.length, changeSlide]);
-
-  const prevSlide = useCallback(() => {
-    changeSlide((currentIndex - 1 + slides.length) % slides.length);
-  }, [currentIndex, slides.length, changeSlide]);
-
-  // Simplified auto-play with better cleanup
   useEffect(() => {
-    if (!isAutoPlay) return;
-    
-    intervalRef.current = setInterval(nextSlide, 4000);
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [nextSlide, isAutoPlay]);
-
-  // Pause auto-play on hover
-  const handleMouseEnter = () => setIsAutoPlay(false);
-  const handleMouseLeave = () => setIsAutoPlay(true);
-
-  // Optimized touch handling
-  const handleTouchStart = useCallback((e) => {
-    touchStartX.current = e.touches[0].clientX;
-    setIsAutoPlay(false);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleTouchMove = useCallback((e) => {
-    touchEndX.current = e.touches[0].clientX;
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    if (!touchStartX.current || !touchEndX.current) return;
-    
-    const distance = touchStartX.current - touchEndX.current;
-    const threshold = 60;
-
-    if (Math.abs(distance) > threshold) {
-      if (distance > 0) {
-        nextSlide();
-      } else {
-        prevSlide();
-      }
-    }
-
-    touchStartX.current = null;
-    touchEndX.current = null;
-    
-    // Resume auto-play after touch
-    setTimeout(() => setIsAutoPlay(true), 1000);
-  }, [nextSlide, prevSlide]);
-
-  // Smoother animation variants
-  const slideVariants = {
-    center: {
-      x: '0%',
-      opacity: 1,
-      scale: 1,
-      zIndex: 10,
-      rotateY: 0,
-      filter: 'brightness(1)',
-      transition: { 
-        duration: 0.5, 
-        ease: [0.4, 0, 0.2, 1], // Custom easing for smoother feel
-        type: "tween"
-      },
-    },
-    left: {
-      x: '-60%',
-      opacity: 0.6,
-      scale: 0.8,
-      zIndex: 5,
-      rotateY: 25,
-      filter: 'brightness(0.7)',
-      transition: { 
-        duration: 0.5, 
-        ease: [0.4, 0, 0.2, 1],
-        type: "tween"
-      },
-    },
-    right: {
-      x: '60%',
-      opacity: 0.6,
-      scale: 0.8,
-      zIndex: 5,
-      rotateY: -25,
-      filter: 'brightness(0.7)',
-      transition: { 
-        duration: 0.5, 
-        ease: [0.4, 0, 0.2, 1],
-        type: "tween"
-      },
-    },
-    hidden: {
-      x: '100%',
-      opacity: 0,
-      scale: 0.6,
-      zIndex: 0,
-      rotateY: -45,
-      filter: 'brightness(0.5)',
-      transition: { 
-        duration: 0.4, 
-        ease: [0.4, 0, 0.2, 1],
-        type: "tween"
-      },
-    },
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev + 1) % portfolioSlides.length);
   };
 
-  const getSlidePosition = useCallback((index) => {
-    if (index === currentIndex) return 'center';
-    if (index === (currentIndex - 1 + slides.length) % slides.length) return 'left';
-    if (index === (currentIndex + 1) % slides.length) return 'right';
-    return 'hidden';
-  }, [currentIndex, slides.length]);
+  const prevSlide = () => {
+    setCurrentIndex((prev) => (prev - 1 + portfolioSlides.length) % portfolioSlides.length);
+  };
+
+  // Touch/Mouse handlers for swipe functionality
+  const handleStart = (e) => {
+    setIsDragging(true);
+    const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+    setStartX(clientX);
+    setCurrentX(clientX);
+  };
+
+  const handleMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const clientX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+    setCurrentX(clientX);
+  };
+
+  const handleEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    
+    const diff = startX - currentX;
+    const threshold = 50;
+    
+    if (diff > threshold) {
+      nextSlide();
+    } else if (diff < -threshold) {
+      prevSlide();
+    }
+  };
+
+  // Auto-play functionality
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!isDragging) {
+        nextSlide();
+      }
+    }, 4000);
+    
+    return () => clearInterval(interval);
+  }, [isDragging]);
+
+  const getSlidePosition = (index) => {
+    const diff = index - currentIndex;
+    const totalSlides = portfolioSlides.length;
+    
+    let position = diff;
+    if (Math.abs(diff) > totalSlides / 2) {
+      position = diff > 0 ? diff - totalSlides : diff + totalSlides;
+    }
+    
+    return position;
+  };
+
+  const getSlideStyle = (index) => {
+    const position = getSlidePosition(index);
+    const isCenter = position === 0;
+    const absPosition = Math.abs(position);
+    
+    // Responsive spacing based on screen size
+    const isMobile = window.innerWidth < 768;
+    const spacing = isMobile ? 120 : 200;
+    
+    const translateX = position * spacing;
+    const translateZ = isCenter ? 0 : -150 - (absPosition - 1) * 80;
+    const scale = isCenter ? 1 : Math.max(0.5, 1 - absPosition * 0.25);
+    const opacity = isCenter ? 1 : Math.max(0.2, 1 - absPosition * 0.4);
+    const rotateY = position * -20;
+    
+    return {
+      transform: `translateX(${translateX}px) translateZ(${translateZ}px) scale(${scale}) rotateY(${rotateY}deg)`,
+      opacity: opacity,
+      zIndex: isCenter ? 10 : Math.max(1, 10 - absPosition)
+    };
+  };
 
   return (
-    <div
-      className="relative w-full max-w-7xl mx-auto select-none"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
-      {/* Desktop Carousel */}
-      <div className="hidden md:block">
-        <div className="relative h-[560px] lg:h-[630px] xl:h-[670px] overflow-visible pb-10 perspective-1000">
-          <div className="relative w-full h-full">
-            {slides.map((slide, index) => {
-              const position = getSlidePosition(index);
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4 overflow-hidden">
+      {/* 3D Carousel Container */}
+      <div className="relative w-full max-w-7xl flex items-center justify-center">
+        <div 
+          ref={carouselRef}
+          className="relative w-full flex items-center justify-center cursor-grab active:cursor-grabbing select-none"
+          style={{ 
+            perspective: '1200px',
+            height: 'clamp(400px, 70vh, 600px)'
+          }}
+          onMouseDown={handleStart}
+          onMouseMove={handleMove}
+          onMouseUp={handleEnd}
+          onMouseLeave={handleEnd}
+          onTouchStart={handleStart}
+          onTouchMove={handleMove}
+          onTouchEnd={handleEnd}
+        >
+          {portfolioSlides.map((slide, index) => {
+            // Optimize Cloudinary images for better performance
+            const optimizeCloudinaryUrl = (url) => {
+              if (!url.includes('cloudinary.com')) return url;
               
-              return (
-                <motion.div
-                  key={`${index}-${slide.title}`} // More stable key
-                  className="absolute inset-0 flex items-center justify-center cursor-pointer"
-                  variants={slideVariants}
-                  animate={position}
-                  onClick={() => position !== 'center' && changeSlide(index)}
-                  style={{ 
-                    willChange: 'transform, opacity',
-                    transformStyle: 'preserve-3d'
-                  }}
-                  layout={false} // Disable layout animations for performance
-                >
-                  <div className="w-[50vw] max-w-[850px] min-w-[380px]">
-                    <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group">
-                      <div className="relative aspect-[16/10]">
-                        <OptimizedImage
-                          src={slide.desktopSrc}
-                          alt={slide.title}
-                          className="w-full h-full object-cover"
-                          lazy={position === 'hidden'}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                      </div>
-                      
-                      <AnimatePresence mode="wait">
-                        {position === 'center' && (
-                          <motion.div
-                            className="p-5 bg-gradient-to-r from-primary to-primary/90"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.3, delay: 0.1 }}
-                          >
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <h3 className="font-main font-bold text-primary-foreground text-xl lg:text-2xl mb-2">
-                                  {slide.title}
-                                </h3>
-                              </div>
-                              <Link
-                                to={`/events#${slide.section}`}
-                                className="border-2 border-primary-color text-primary-color hover:bg-primary-color hover:text-primary-foreground transition-all duration-300 px-5 py-2 font-main font-semibold tracking-wide rounded-full hover:scale-105 text-base transform-gpu"
-                              >
-                                {slide.button}
-                              </Link>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Carousel */}
-      <div className="block md:hidden">
-        <div className="relative h-[460px] overflow-visible px-4 pb-6">
-          <div className="relative w-full h-full">
-            {slides.map((slide, index) => {
-              const position = getSlidePosition(index);
+              // Add Cloudinary transformations for optimization
+              const transforms = isMobile 
+                ? 'c_fill,w_400,h_600,q_80,f_auto' // Mobile: smaller size, good quality
+                : 'c_fill,w_600,h_400,q_85,f_auto'; // Desktop: medium size, good quality
               
-              return (
-                <motion.div
-                  key={`mobile-${index}-${slide.title}`}
-                  className="absolute inset-0 flex items-center justify-center"
-                  variants={slideVariants}
-                  animate={position}
-                  style={{ 
-                    willChange: 'transform, opacity',
-                    transformStyle: 'preserve-3d'
-                  }}
-                  layout={false}
-                >
-                  <div className="w-[80vw] max-w-[340px]">
-                    <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 group">
-                      <div className="relative aspect-[4/5]">
-                        <OptimizedImage
-                          src={slide.mobileSrc}
-                          alt={slide.title}
-                          className="w-full h-full object-cover"
-                          lazy={position === 'hidden'}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+              return url.replace('/upload/', `/upload/${transforms}/`);
+            };
+            
+            const imageSrc = optimizeCloudinaryUrl(isMobile ? slide.mobileSrc : slide.desktopSrc);
+            
+            return (
+              <div
+                key={index}
+                className="absolute transition-all duration-700 ease-out transform-gpu flex items-center justify-center"
+                style={{
+                  transformStyle: 'preserve-3d',
+                  left: '50%',
+                  top: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  ...getSlideStyle(index)
+                }}
+              >
+                <div className="relative group">
+                  <img
+                    src={imageSrc}
+                    alt={slide.title}
+                    className="object-cover rounded-2xl shadow-2xl transition-all duration-300 group-hover:shadow-purple-500/30
+                      w-60 h-80 md:w-80 md:h-60 lg:w-96 lg:h-72"
+                    style={{
+                      aspectRatio: isMobile ? '9/16' : '16/9'
+                    }}
+                    draggable={false}
+                  />
+                  
+                  {/* Subtle overlay for depth */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent rounded-2xl pointer-events-none" />
+                  
+                  {/* Glow effect for center image */}
+                  {getSlidePosition(index) === 0 && (
+                    <div className="absolute inset-0 rounded-2xl shadow-2xl shadow-purple-500/20 pointer-events-none" />
+                  )}
+                  
+                  {/* Title overlay for center image */}
+                  {getSlidePosition(index) === 0 && (
+                    <div className="absolute bottom-4 left-4 right-4 text-center">
+                      <div className="bg-black/50 backdrop-blur-sm rounded-lg px-4 py-2">
+                        <h3 className="text-white font-semibold text-sm md:text-base">
+                          {slide.title}
+                        </h3>
                       </div>
-                      
-                      <AnimatePresence mode="wait">
-                        {position === 'center' && (
-                          <motion.div
-                            className="p-4 text-center bg-gradient-to-b from-primary to-primary/90"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.3, delay: 0.1 }}
-                          >
-                            <h3 className="font-main font-bold text-primary-foreground text-lg mb-3">
-                              {slide.title}
-                            </h3>
-                            <Link
-                              to={`/events#${slide.section}`}
-                              className="border-2 border-primary-color text-primary-color hover:bg-primary-color hover:text-primary-foreground transition-all duration-300 px-5 py-2 font-main font-semibold tracking-wide rounded-full hover:scale-105 text-base transform-gpu"
-                            >
-                              {slide.button}
-                            </Link>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
                     </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
-      </div>
-
-      {/* Navigation Dots */}
-      <div className="flex justify-center space-x-2 mt-6">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => changeSlide(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              index === currentIndex 
-                ? 'bg-primary scale-110' 
-                : 'bg-primary/30 hover:bg-primary/50'
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
       </div>
     </div>
   );
